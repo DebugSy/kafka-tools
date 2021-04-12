@@ -2,6 +2,8 @@ package com.inforefiner.tools.kafka;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
+import java.sql.Timestamp;
+
 /**
  * Created by P0007 on 2020/3/9.
  *

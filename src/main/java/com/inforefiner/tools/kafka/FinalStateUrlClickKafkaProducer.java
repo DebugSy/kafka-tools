@@ -22,9 +22,9 @@ public class FinalStateUrlClickKafkaProducer implements Runnable{
 
     private static final String SEPARATOR = ",";
 
-    private static String bootstrap = "192.168.2.170:9092";
+    private static String bootstrap = "192.168.1.82:9094";
 
-    private static String topic = "shiy_topic_final_state";
+    private static String topic = "shiy.flink.flinal.state.merge";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
@@ -69,7 +69,7 @@ public class FinalStateUrlClickKafkaProducer implements Runnable{
                 producer.send(record);
                 count++;
                 if (count == 1) {
-                    Thread.sleep(1000 * 10 * 1);
+                    Thread.sleep(1000 * 5 * 1);
                     count = 0;
                 }
             } catch (InterruptedException e) {

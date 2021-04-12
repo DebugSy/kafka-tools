@@ -19,13 +19,13 @@ import java.util.UUID;
  * Created by P0007 on 2020/03/09.
  */
 @Slf4j
-public class UrlClickKafkaProducer implements Runnable{
+public class DummyUrlClickKafkaProducer implements Runnable{
 
     private static final String SEPARATOR = ",";
 
     private static String bootstrap = "192.168.1.82:9094";
 
-    private static String topic = "shiy.flink.url.click";
+    private static String topic = "shiy-dummy-source-url-click";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
@@ -42,7 +42,7 @@ public class UrlClickKafkaProducer implements Runnable{
 //        System.setProperty("java.security.krb5.conf", "E:\\kerberos\\wangjing\\krb5.conf");
 //        System.setProperty("java.security.auth.login.config", "E:\\kerberos\\wangjing\\kafka_client_jaas.conf");
 
-        UrlClickKafkaProducer kafkaProducerTool = new UrlClickKafkaProducer();
+        DummyUrlClickKafkaProducer kafkaProducerTool = new DummyUrlClickKafkaProducer();
         for (int i = 0; i < 1; i++) {
             Thread thread = new Thread(kafkaProducerTool);
             thread.setName("Thread-" + i);
@@ -87,8 +87,8 @@ public class UrlClickKafkaProducer implements Runnable{
                 ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, message.toString());
                 producer.send(record);
                 count++;
-                if (count == 1000) {
-                    Thread.sleep(1000 * 10);
+                if (count == 1) {
+                    Thread.sleep(1000 * 1);
                     count = 0;
                 }
             } catch (InterruptedException e) {
@@ -106,9 +106,6 @@ public class UrlClickKafkaProducer implements Runnable{
         LocalDateTime localDateTime = clickTime.toLocalDateTime();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         String clickTimeStr = dateTimeFormatter.format(zonedDateTime);
-        Date date = new Date(clickTime.getTime());
-        String dateStr = dateFormat.format(date);
-        String timeStr = timeFormat.format(date);
         String url = "http://127.0.0.1/api/" + (char) ('H' + random.nextInt(4));
         return new StringBuilder()
                 .append(userId)
@@ -116,9 +113,7 @@ public class UrlClickKafkaProducer implements Runnable{
                 .append(SEPARATOR).append(url)
                 .append(SEPARATOR).append(clickTimeStr)
                 .append(SEPARATOR).append(random.nextInt(100))
-                .append(SEPARATOR).append(UUID.randomUUID().toString())
-                .append(SEPARATOR).append(dateStr)
-                .append(SEPARATOR).append(timeStr);
+                .append(SEPARATOR).append(UUID.randomUUID().toString());
     }
 
 }
