@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.inforefiner.tools.kafka.snowball;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,18 +19,19 @@ import java.util.UUID;
  * Created by P0007 on 2020/03/09.
  */
 @Slf4j
-public class UrlClickKafkaProducer implements Runnable{
+public class SnowballKafkaProducer implements Runnable{
 
     private static final String SEPARATOR = ",";
 
-    private static String bootstrap = "192.168.1.82:9094";
+    private static String bootstrap = "rf.test.bigdata.node2:9092";
 
-    private static String topic = "shiy.flink.url.click";
+    private static String topic = "shiy.flink.snowball.sink.2";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
+    @Override
     public void run() {
         KafkaProducer kafkaProducer = initProducer(bootstrap);
         produce(kafkaProducer, topic);
@@ -39,10 +40,7 @@ public class UrlClickKafkaProducer implements Runnable{
 
     public static void main(String[] args) {
 
-//        System.setProperty("java.security.krb5.conf", "E:\\kerberos\\wangjing\\krb5.conf");
-//        System.setProperty("java.security.auth.login.config", "E:\\kerberos\\wangjing\\kafka_client_jaas.conf");
-
-        UrlClickKafkaProducer kafkaProducerTool = new UrlClickKafkaProducer();
+        SnowballKafkaProducer kafkaProducerTool = new SnowballKafkaProducer();
         for (int i = 0; i < 1; i++) {
             Thread thread = new Thread(kafkaProducerTool);
             thread.setName("Thread-" + i);
@@ -84,15 +82,16 @@ public class UrlClickKafkaProducer implements Runnable{
                         throw new RuntimeException("sourceFlag is error");
                 }
                 log.info("{}", message.toString());
-                ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, message.toString());
+                ProducerRecord<String, String> record = new ProducerRecord<String, String>(
+                        topic, 4, UUID.randomUUID().toString().substring(0, 6), message.toString());
                 producer.send(record);
                 count++;
-                Thread.sleep(1000 * 1);
-                if (count == 1000) {
+                if (count == 2000000) {
+                    count = 0;
                     Thread.sleep(1000 * 5);
                     break;
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -100,19 +99,21 @@ public class UrlClickKafkaProducer implements Runnable{
 
     private StringBuilder generateUrlClickMessage() {
         Random random = new Random(System.currentTimeMillis());
-        int nextInt = random.nextInt(10);
+        int nextInt = random.nextInt(100);
+        String action = "I";
         Integer userId = 65 + nextInt;
         String username = "user" + (char) ('A' + nextInt);
-        Timestamp clickTime = new Timestamp(System.currentTimeMillis() - 7171000);
+        Timestamp clickTime = new Timestamp(System.currentTimeMillis());
         LocalDateTime localDateTime = clickTime.toLocalDateTime();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         String clickTimeStr = dateTimeFormatter.format(zonedDateTime);
         Date date = new Date(clickTime.getTime());
         String dateStr = dateFormat.format(date);
         String timeStr = timeFormat.format(date);
-        String url = "http://127.0.0.1/api/" + (char) ('H' + random.nextInt(4));
+        String url = "http://www.inforefiner.com/api/" + (char) ('H' + random.nextInt(4));
         return new StringBuilder()
-                .append(userId)
+                .append(action)
+                .append(SEPARATOR).append(userId)
                 .append(SEPARATOR).append(username)
                 .append(SEPARATOR).append(url)
                 .append(SEPARATOR).append(clickTimeStr)

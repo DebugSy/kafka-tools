@@ -25,7 +25,6 @@ public class AllDataTypeProducer {
         Random random = new Random(System.currentTimeMillis());
         KafkaProducer kafkaProducer = initProducer(bootstrap);
         while (true) {
-            Thread.sleep(1000 * 5);
             produce(kafkaProducer, topic);
         }
     }
@@ -56,7 +55,7 @@ public class AllDataTypeProducer {
                 producer.send(record);
                 count++;
                 if (count == 1) {
-                    Thread.sleep(1000 * 5 * 1);
+                    Thread.sleep(1000 * 1 * 1);
                     count = 0;
                 }
             } catch (InterruptedException e) {
@@ -92,7 +91,6 @@ public class AllDataTypeProducer {
                 .append(SEPARATOR).append(floatColV)
                 .append(SEPARATOR).append(longColV)
                 .append(SEPARATOR).append(shortCloV)
-                .append(SEPARATOR).append(binaryColV)
                 .toString();
     }
 
