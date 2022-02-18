@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka.snowball;
+package com.shiy.tools.kafka.snowball;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

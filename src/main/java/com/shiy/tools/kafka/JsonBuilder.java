@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;

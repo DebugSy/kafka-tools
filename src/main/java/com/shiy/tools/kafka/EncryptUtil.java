@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 

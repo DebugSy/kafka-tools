@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka.snowball;
+package com.shiy.tools.kafka.snowball;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

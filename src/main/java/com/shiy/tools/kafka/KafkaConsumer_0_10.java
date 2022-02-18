@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

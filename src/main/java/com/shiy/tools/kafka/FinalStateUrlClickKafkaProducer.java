@@ -1,17 +1,13 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
-import com.inforefiner.tools.kafka.generator.FiniStateUrlGenerator;
+import com.shiy.tools.kafka.generator.FiniStateUrlGenerator;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Properties;
-import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created by P0007 on 2020/03/09.

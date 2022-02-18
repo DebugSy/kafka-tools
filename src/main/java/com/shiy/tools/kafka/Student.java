@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import java.io.Closeable;
 import java.io.IOException;

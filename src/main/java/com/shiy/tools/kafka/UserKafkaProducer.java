@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka.snowball;
+package com.shiy.tools.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
@@ -19,19 +18,17 @@ import java.util.UUID;
  * Created by P0007 on 2020/03/09.
  */
 @Slf4j
-public class SnowballKafkaProducer implements Runnable{
+public class UserKafkaProducer implements Runnable{
 
     private static final String SEPARATOR = ",";
 
-    private static String bootstrap = "rf.test.bigdata.node2:9092";
+    private static String bootstrap = "192.168.1.82:9094";
 
-    private static String topic = "shiy.flink.snowball.sink.2";
+    private static String topic = "shiy.flink.user";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
     public static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
-    @Override
     public void run() {
         KafkaProducer kafkaProducer = initProducer(bootstrap);
         produce(kafkaProducer, topic);
@@ -40,7 +37,7 @@ public class SnowballKafkaProducer implements Runnable{
 
     public static void main(String[] args) {
 
-        SnowballKafkaProducer kafkaProducerTool = new SnowballKafkaProducer();
+        UserKafkaProducer kafkaProducerTool = new UserKafkaProducer();
         for (int i = 0; i < 1; i++) {
             Thread thread = new Thread(kafkaProducerTool);
             thread.setName("Thread-" + i);
@@ -58,10 +55,6 @@ public class SnowballKafkaProducer implements Runnable{
         props.put("buffer.memory", "33554432");
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-//        props.put("security.protocol", "SASL_PLAINTEXT");
-//        props.put("sasl.kerberos.service.name", "kafka");
-//        props.put("sasl.mechanism", "GSSAPI");
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
         return kafkaProducer;
     }
@@ -76,51 +69,40 @@ public class SnowballKafkaProducer implements Runnable{
                 switch (sourceFlag) {
                     case 0:
                     case 1:
-                        message = generateUrlClickMessage();
+                        message = generateUserMessage();
                         break;
                     default:
                         throw new RuntimeException("sourceFlag is error");
                 }
                 log.info("{}", message.toString());
-                ProducerRecord<String, String> record = new ProducerRecord<String, String>(
-                        topic, 4, UUID.randomUUID().toString().substring(0, 6), message.toString());
+                ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, message.toString());
                 producer.send(record);
                 count++;
-                if (count == 2000000) {
+                if (count == 1) {
+                    Thread.sleep(1000 * 1 * 1);
                     count = 0;
-                    Thread.sleep(1000 * 5);
-                    break;
                 }
-            } catch (Exception e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private StringBuilder generateUrlClickMessage() {
+    private StringBuilder generateUserMessage() {
         Random random = new Random(System.currentTimeMillis());
-        int nextInt = random.nextInt(100);
-        String action = "I";
+        int nextInt = random.nextInt(10);
         Integer userId = 65 + nextInt;
-        String username = "user" + (char) ('A' + nextInt);
-        Timestamp clickTime = new Timestamp(System.currentTimeMillis());
-        LocalDateTime localDateTime = clickTime.toLocalDateTime();
+        String username = "user" + (char) ('A' + nextInt) + "_" + UUID.randomUUID().toString().substring(0, 4);
+        Timestamp activityTime = new Timestamp(System.currentTimeMillis() - 1839486019 - 1000 * 60 * 3);
+        LocalDateTime localDateTime = activityTime.toLocalDateTime();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         String clickTimeStr = dateTimeFormatter.format(zonedDateTime);
-        Date date = new Date(clickTime.getTime());
-        String dateStr = dateFormat.format(date);
-        String timeStr = timeFormat.format(date);
-        String url = "http://www.inforefiner.com/api/" + (char) ('H' + random.nextInt(4));
+        String address = "北京市朝阳区望京东湖街道" + nextInt + "号";
         return new StringBuilder()
-                .append(action)
-                .append(SEPARATOR).append(userId)
+                .append(userId)
                 .append(SEPARATOR).append(username)
-                .append(SEPARATOR).append(url)
-                .append(SEPARATOR).append(clickTimeStr)
-                .append(SEPARATOR).append(random.nextInt(100))
-                .append(SEPARATOR).append(UUID.randomUUID().toString())
-                .append(SEPARATOR).append(dateStr)
-                .append(SEPARATOR).append(timeStr);
+                .append(SEPARATOR).append(address)
+                .append(SEPARATOR).append(clickTimeStr);
     }
 
 }

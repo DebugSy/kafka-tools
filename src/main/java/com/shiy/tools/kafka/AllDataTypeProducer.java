@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;

@@ -1,6 +1,6 @@
-package com.inforefiner.tools.kafka.generator;
+package com.shiy.tools.kafka.generator;
 
-import com.inforefiner.tools.kafka.JsonBuilder;
+import com.shiy.tools.kafka.JsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka.snowball;
+package com.shiy.tools.kafka.snowball;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.inforefiner.tools.kafka;
+package com.shiy.tools.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,13 +19,13 @@ import java.util.UUID;
  * Created by P0007 on 2020/03/09.
  */
 @Slf4j
-public class DummyUrlClickKafkaProducer implements Runnable{
+public class UrlClickKafkaProducer implements Runnable{
 
     private static final String SEPARATOR = ",";
 
     private static String bootstrap = "192.168.1.82:9094";
 
-    private static String topic = "shiy-dummy-source-url-click";
+    private static String topic = "shiy.flink.url.click";
 
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
     public static SimpleDateFormat timeFormat = new SimpleDateFormat("HHmmss");
@@ -42,7 +42,7 @@ public class DummyUrlClickKafkaProducer implements Runnable{
 //        System.setProperty("java.security.krb5.conf", "E:\\kerberos\\wangjing\\krb5.conf");
 //        System.setProperty("java.security.auth.login.config", "E:\\kerberos\\wangjing\\kafka_client_jaas.conf");
 
-        DummyUrlClickKafkaProducer kafkaProducerTool = new DummyUrlClickKafkaProducer();
+        UrlClickKafkaProducer kafkaProducerTool = new UrlClickKafkaProducer();
         for (int i = 0; i < 1; i++) {
             Thread thread = new Thread(kafkaProducerTool);
             thread.setName("Thread-" + i);
@@ -87,9 +87,10 @@ public class DummyUrlClickKafkaProducer implements Runnable{
                 ProducerRecord<String, String> record = new ProducerRecord<String, String>(topic, message.toString());
                 producer.send(record);
                 count++;
-                if (count == 1) {
-                    Thread.sleep(1000 * 1);
-                    count = 0;
+                Thread.sleep(1000 * 1);
+                if (count == 1000) {
+                    Thread.sleep(1000 * 5);
+                    break;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -101,11 +102,14 @@ public class DummyUrlClickKafkaProducer implements Runnable{
         Random random = new Random(System.currentTimeMillis());
         int nextInt = random.nextInt(10);
         Integer userId = 65 + nextInt;
-        String username = "user" + (char) ('A' + nextInt) + "_" + UUID.randomUUID().toString().substring(0, 4);
+        String username = "user" + (char) ('A' + nextInt);
         Timestamp clickTime = new Timestamp(System.currentTimeMillis() - 7171000);
         LocalDateTime localDateTime = clickTime.toLocalDateTime();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
         String clickTimeStr = dateTimeFormatter.format(zonedDateTime);
+        Date date = new Date(clickTime.getTime());
+        String dateStr = dateFormat.format(date);
+        String timeStr = timeFormat.format(date);
         String url = "http://127.0.0.1/api/" + (char) ('H' + random.nextInt(4));
         return new StringBuilder()
                 .append(userId)
@@ -113,7 +117,9 @@ public class DummyUrlClickKafkaProducer implements Runnable{
                 .append(SEPARATOR).append(url)
                 .append(SEPARATOR).append(clickTimeStr)
                 .append(SEPARATOR).append(random.nextInt(100))
-                .append(SEPARATOR).append(UUID.randomUUID().toString());
+                .append(SEPARATOR).append(UUID.randomUUID().toString())
+                .append(SEPARATOR).append(dateStr)
+                .append(SEPARATOR).append(timeStr);
     }
 
 }
